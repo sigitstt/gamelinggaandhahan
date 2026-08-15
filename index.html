@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Lingga Andhahan</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --primary: #4a90e2;
+            --yellow-btn: #f1c40f;
+            --brown-btn: #d7a86e;
+            --action-btn: #2ecc71;
+            --delete-btn: #e74c3c;
+            --shift-btn: #34495e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 90vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            user-select: none;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .screen {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Form Identitas */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .btn-start {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* Area Permainan */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            background: #eef2f5;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .timer-badge {
+            background-color: #e74c3c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .question-card {
+            background: #fff8e7;
+            border: 2px dashed #f39c12;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .question-card h2 {
+            font-size: 1.8rem;
+            color: #333;
+        }
+
+        .answer-box {
+            min-height: 45px;
+            border: 2px solid #333;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: #fff;
+            margin-bottom: 15px;
+            padding: 5px 10px;
+        }
+
+        /* Papan Ketik */
+        .keyboard-container {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .kb-text-row {
+            background-color: #ffffff;
+            color: #333;
+            padding: 8px 10px;
+            font-size: 0.9rem;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            white-space: pre;
+        }
+
+        .kb-btn-row {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: opacity 0.1s;
+        }
+
+        .kb-btn-row:active {
+            opacity: 0.7;
+        }
+
+        .btn-yellow {
+            background-color: var(--yellow-btn);
+            color: #000;
+        }
+
+        .btn-brown {
+            background-color: var(--brown-btn);
+            color: #000;
+        }
+
+        /* Baris Bawah (Control) */
+        .bottom-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .bottom-controls button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        #btn-shift { background-color: var(--shift-btn); }
+        #btn-gosok { background-color: var(--delete-btn); }
+        #btn-kirim { background-color: var(--action-btn); }
+
+        /* Modal Pengaturan */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 15px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1 id="app-title">GAME LINGGA ANDHAHAN</h1>
+        </header>
+
+        <!-- Halaman Identitas -->
+        <div id="identity-screen" class="screen">
+            <div class="form-group">
+                <label for="nama">Nama Lengkap</label>
+                <input type="text" id="nama" placeholder="Masukkan nama...">
+            </div>
+            <div class="form-group">
+                <label for="kelas">Kelas</label>
+                <input type="text" id="kelas" placeholder="Masukkan kelas...">
+            </div>
+            <div class="form-group">
+                <label for="absen">No. Absen</label>
+                <input type="number" id="absen" placeholder="Masukkan nomor absen...">
+            </div>
+            <div class="form-group">
+                <label for="mode">Mode Permainan</label>
+                <select id="mode" onchange="togglePasswordInput()">
+                    <option value="Formatif">Formatif</option>
+                    <option value="Sumatif">Sumatif</option>
+                </select>
+            </div>
+            <div class="form-group hidden" id="password-group">
+                <label for="input-password-sumatif">Password Sumatif</label>
+                <input type="password" id="input-password-sumatif" placeholder="Masukkan password sumatif...">
+            </div>
+            <button class="btn-start" onclick="startGame()">Mulai Permainan</button>
+        </div>
+
+        <!-- Halaman Permainan -->
+        <div id="game-screen" class="screen hidden">
+            <div class="game-header">
+                <span id="player-info">-</span>
+                <span class="timer-badge">⏱️ <span id="timer-display">0</span>s</span>
+                <span>Soal: <span id="current-index">1</span>/<span id="total-questions">10</span></span>
+            </div>
+
+            <div class="question-card">
+                <p>Tembung:</p>
+                <h2 id="target-word">...</h2>
+            </div>
+
+            <div class="answer-box" id="user-answer"></div>
+
+            <!-- Container Papan Ketik -->
+            <div class="keyboard-container">
+                <!-- Shift 1 -->
+                <div id="shift1-layout">
+                    <div class="kb-text-row">Ing dhuwur iki kalebu tembung apa?</div>
+                    <div class="kb-text-row">Ket. : TL = Tembung Lingga</div>
+                    <div class="kb-text-row">            TA = Tembung Andhahan</div>
+                    <button class="kb-btn-row btn-yellow" onclick="pressKey('TL')">TL</button>
+                    <button class="kb-btn-row btn-brown" onclick="pressKey('TA - Imbuhan - Awalan')">TA - Imbuhan - Awalan</button>
+                    <button class="kb-btn-row btn-brown" onclick="pressKey('TA - Imbuhan - Seselan')">TA - Imbuhan - Seselan</button>
+                    <button class="kb-btn-row btn-brown" onclick="pressKey('TA - Imbuhan - Akhiran')">TA - Imbuhan - Akhiran</button>
+                </div>
+
+                <!-- Shift 2 -->
+                <div id="shift2-layout" class="hidden">
+                    <div class="kb-text-row">Ing dhuwur iki kalebu tembung apa?</div>
+                    <button class="kb-btn-row btn-brown" onclick="pressKey('TA - Dwi Lingga')">TA - Dwi Lingga</button>
+                    <button class="kb-btn-row btn-brown" onclick="pressKey('TA - Dwi Lingga Salin swara')">TA - Dwi Lingga Salin swara</button>
+                    <button class="kb-btn-row btn-brown" onclick="pressKey('TA - Dwi Purwa')">TA - Dwi Purwa</button>
+                    <button class="kb-btn-row btn-brown" onclick="pressKey('TA - Dwi Wasana')">TA - Dwi Wasana</button>
+                    <button class="kb-btn-row btn-brown" onclick="pressKey('TA - Camboran Wutuh')">TA - Camboran Wutuh</button>
+                    <button class="kb-btn-row btn-brown" onclick="pressKey('TA - Camboran Tugel')">TA - Camboran Tugel</button>
+                </div>
+
+                <!-- Baris Kontrol Bawah -->
+                <div class="bottom-controls">
+                    <button id="btn-shift" onclick="toggleShift()">Shift (1/2)</button>
+                    <button id="btn-gosok" onclick="clearAnswer()">Gosok</button>
+                    <button id="btn-kirim" onclick="submitAnswer()">Kirim</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pengaturan (Terbuka dengan 5x ketuk Judul) -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Pengaturan Aplikasi</h3>
+            <div class="form-group">
+                <label for="setting-jumlah-soal">Jumlah Soal</label>
+                <input type="number" id="setting-jumlah-soal" min="1" value="10">
+            </div>
+            <div class="form-group">
+                <label for="setting-waktu">Waktu Permainan (Detik)</label>
+                <input type="number" id="setting-waktu" min="0" placeholder="Contoh: 120 (0 = tanpa batas)">
+            </div>
+            <div class="form-group">
+                <label for="setting-password-sumatif">Password Sumatif</label>
+                <input type="text" id="setting-password-sumatif" placeholder="Set password mode sumatif...">
+            </div>
+            <div class="modal-buttons">
+                <button onclick="closeSettings()" style="padding: 8px 15px;">Batal</button>
+                <button onclick="saveSettings()" style="padding: 8px 15px; background:var(--primary); color:white; border:none; border-radius:4px;">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // PASTE URL GOOGLE APPS SCRIPT ANDA DI BAWAH INI
+        // =========================================================================
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxYOUR_SCRIPT_ID_HERE/exec";
+        // =========================================================================
+
+        // Bank Soal Default (Akan diacak saat game dimulai)
+        const defaultQuestions = [
+            { word: "Pangan", answer: "TL" },
+            { word: "Nulis", answer: "TA - Imbuhan - Awalan" },
+            { word: "Tinulis", answer: "TA - Imbuhan - Seselan" },
+            { word: "Panganan", answer: "TA - Imbuhan - Akhiran" },
+            { word: "Bocah-bocah", answer: "TA - Dwi Lingga" },
+            { word: "Wola-wali", answer: "TA - Dwi Lingga Salin swara" },
+            { word: "Leluhur", answer: "TA - Dwi Purwa" },
+            { word: "Cekikik", answer: "TA - Dwi Wasana" },
+            { word: "Meja tulis", answer: "TA - Camboran Wutuh" },
+            { word: "Bangjo", answer: "TA - Camboran Tugel" },
+            { word: "Tuku", answer: "TL" },
+            { word: "Gawa", answer: "TL" },
+            { word: "Jumatik", answer: "TA - Imbuhan - Seselan" },
+            { word: "Tulisane", answer: "TA - Imbuhan - Akhiran" },
+            { word: "Mangan", answer: "TA - Imbuhan - Awalan" }
+        ];
+
+        let questionsPool = [...defaultQuestions];
+        let activeQuestions = [];
+        let currentQuestionIndex = 0;
+        let selectedAnswer = "";
+        let currentShift = 1;
+        let tapCount = 0;
+        let tapTimer = null;
+        let score = 0;
+        let timerInterval = null;
+        let timeRemaining = 0;
+
+        let playerData = { nama: "", kelas: "", absen: "", mode: "Formatif" };
+
+        // Muat Data Soal dari Google Sheets saat aplikasi pertama kali dibuka (jika ada)
+        window.addEventListener("DOMContentLoaded", () => {
+            fetchQuestionsFromSheet();
+        });
+
+        function fetchQuestionsFromSheet() {
+            if (!SCRIPT_URL || SCRIPT_URL.includes("YOUR_SCRIPT_ID_HERE")) return;
+            fetch(SCRIPT_URL)
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data) && data.length > 0) {
+                        questionsPool = data;
+                    }
+                })
+                .catch(err => console.log("Menggunakan bank soal lokal:", err));
+        }
+
+        // Fitur Suara Tombol (Audio Synthesizer)
+        function playButtonSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.05);
+
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.05);
+            } catch (e) {}
+        }
+
+        // Fungsi Pengacak Soal (Fisher-Yates Shuffle)
+        function shuffleArray(array) {
+            let shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Tampilkan/Sembunyikan Input Password Sumatif
+        function togglePasswordInput() {
+            const mode = document.getElementById("mode").value;
+            const passwordGroup = document.getElementById("password-group");
+            if (mode === "Sumatif") {
+                passwordGroup.classList.remove("hidden");
+            } else {
+                passwordGroup.classList.add("hidden");
+            }
+        }
+
+        // Fitur 5 Ketuk pada Judul
+        document.getElementById("app-title").addEventListener("click", () => {
+            tapCount++;
+            clearTimeout(tapTimer);
+            if (tapCount >= 5) {
+                playButtonSound();
+                openSettings();
+                tapCount = 0;
+            } else {
+                tapTimer = setTimeout(() => { tapCount = 0; }, 2000);
+            }
+        });
+
+        function openSettings() {
+            document.getElementById("setting-jumlah-soal").value = localStorage.getItem("jumlahSoal") || 10;
+            document.getElementById("setting-waktu").value = localStorage.getItem("waktuGame") || 120;
+            document.getElementById("setting-password-sumatif").value = localStorage.getItem("passwordSumatif") || "1234";
+            document.getElementById("settings-modal").classList.remove("hidden");
+        }
+
+        function closeSettings() {
+            playButtonSound();
+            document.getElementById("settings-modal").classList.add("hidden");
+        }
+
+        function saveSettings() {
+            playButtonSound();
+            const jSoal = document.getElementById("setting-jumlah-soal").value;
+            const wGame = document.getElementById("setting-waktu").value;
+            const pass = document.getElementById("setting-password-sumatif").value.trim();
+
+            localStorage.setItem("jumlahSoal", jSoal || 10);
+            localStorage.setItem("waktuGame", wGame || 0);
+            localStorage.setItem("passwordSumatif", pass || "1234");
+
+            closeSettings();
+            alert("Pengaturan berhasil disimpan!");
+        }
+
+        function startGame() {
+            playButtonSound();
+            playerData.nama = document.getElementById("nama").value.trim();
+            playerData.kelas = document.getElementById("kelas").value.trim();
+            playerData.absen = document.getElementById("absen").value.trim();
+            playerData.mode = document.getElementById("mode").value;
+
+            if (!playerData.nama || !playerData.kelas || !playerData.absen) {
+                alert("Harap lengkapi semua data identitas!");
+                return;
+            }
+
+            // Validasi Password jika Mode Sumatif
+            if (playerData.mode === "Sumatif") {
+                const inputPass = document.getElementById("input-password-sumatif").value;
+                const savedPass = localStorage.getItem("passwordSumatif") || "1234";
+
+                if (inputPass !== savedPass) {
+                    alert("Password Sumatif salah! Silakan hubungi guru.");
+                    return;
+                }
+            }
+
+            // Acak soal dan ambil sebanyak jumlahSoal
+            const totalSoalSetting = parseInt(localStorage.getItem("jumlahSoal") || 10);
+            const shuffled = shuffleArray(questionsPool);
+            activeQuestions = shuffled.slice(0, Math.min(totalSoalSetting, shuffled.length));
+
+            currentQuestionIndex = 0;
+            score = 0;
+
+            document.getElementById("player-info").innerText = `${playerData.nama} (${playerData.kelas})`;
+            document.getElementById("identity-screen").classList.add("hidden");
+            document.getElementById("game-screen").classList.remove("hidden");
+            document.getElementById("total-questions").innerText = activeQuestions.length;
+
+            // Jalankan Timer
+            const waktuSetting = parseInt(localStorage.getItem("waktuGame") || 120);
+            if (waktuSetting > 0) {
+                timeRemaining = waktuSetting;
+                document.getElementById("timer-display").innerText = timeRemaining;
+                clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    timeRemaining--;
+                    document.getElementById("timer-display").innerText = timeRemaining;
+                    if (timeRemaining <= 0) {
+                        clearInterval(timerInterval);
+                        alert("Waktu Habis!");
+                        finishGame();
+                    }
+                }, 1000);
+            } else {
+                document.getElementById("timer-display").innerText = "∞";
+            }
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex < activeQuestions.length) {
+                document.getElementById("current-index").innerText = currentQuestionIndex + 1;
+                document.getElementById("target-word").innerText = activeQuestions[currentQuestionIndex].word;
+                clearAnswer(false);
+            } else {
+                clearInterval(timerInterval);
+                finishGame();
+            }
+        }
+
+        function pressKey(val) {
+            playButtonSound();
+            selectedAnswer = val;
+            document.getElementById("user-answer").innerText = selectedAnswer;
+        }
+
+        function clearAnswer(playSound = true) {
+            if (playSound) playButtonSound();
+            selectedAnswer = "";
+            document.getElementById("user-answer").innerText = "";
+        }
+
+        function toggleShift() {
+            playButtonSound();
+            const s1 = document.getElementById("shift1-layout");
+            const s2 = document.getElementById("shift2-layout");
+            if (currentShift === 1) {
+                s1.classList.add("hidden");
+                s2.classList.remove("hidden");
+                currentShift = 2;
+            } else {
+                s2.classList.add("hidden");
+                s1.classList.remove("hidden");
+                currentShift = 1;
+            }
+        }
+
+        function submitAnswer() {
+            playButtonSound();
+            if (!selectedAnswer) {
+                alert("Pilih jawaban terlebih dahulu!");
+                return;
+            }
+
+            if (selectedAnswer === activeQuestions[currentQuestionIndex].answer) {
+                score += (100 / activeQuestions.length);
+            }
+
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function finishGame() {
+            clearInterval(timerInterval);
+            const finalScore = Math.round(score);
+            alert(`Permainan Selesai!\nSkor Anda: ${finalScore}`);
+            sendDataToSheet(finalScore);
+            location.reload();
+        }
+
+        function sendDataToSheet(finalScore) {
+            if (!SCRIPT_URL || SCRIPT_URL.includes("YOUR_SCRIPT_ID_HERE")) return;
+
+            const payload = {
+                sheet: playerData.mode,
+                nama: playerData.nama,
+                kelas: playerData.kelas,
+                absen: playerData.absen,
+                skor: finalScore,
+                waktu: new Date().toLocaleString()
+            };
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            }).catch(err => console.error("Gagal mengirim data:", err));
+        }
+    </script>
+</body>
+</html>
