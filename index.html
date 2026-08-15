@@ -261,7 +261,7 @@
 
     <div class="container">
         <header>
-            <h1 id="app-title">GAME8 LINGGA ANDHAHAN</h1>
+            <h1 id="app-title">GAME LINGGA ANDHAHAN</h1>
         </header>
 
         <!-- Halaman Identitas -->
@@ -299,7 +299,7 @@
         <!-- Halaman P E R M A I N A N -->
         <div id="game-screen" class="screen hidden">
             <div class="game-header">
-                <span id="player-info">-</span>
+        <!--    <span id="player-info">-</span>   berhubungan dg baris 703 -->
                 <span class="lives-badge" id="lives-display">❤️❤️❤️</span>
                 <span class="timer-badge">⏱️ <span id="timer-display">0</span>s</span>
                 <span>Soal: <span id="current-index">1</span>/<span id="total-questions">10</span></span>
@@ -700,7 +700,7 @@
             currentQuestionIndex = 0;
             score = 0;
 
-            document.getElementById("player-info").innerText = `${playerData.nama} (${playerData.kelas})`;
+// 302      document.getElementById("player-info").innerText = `${playerData.nama} (${playerData.kelas})`;
             document.getElementById("identity-screen").classList.add("hidden");
             document.getElementById("game-screen").classList.remove("hidden");
             document.getElementById("total-questions").innerText = activeQuestions.length;
